@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agent File Upload — Kuddleandco </title>
+  <title>Agent File Upload — Kuddleandco</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,7 +35,6 @@
       overflow-x: hidden;
     }
 
-    /* Background grid */
     body::before {
       content: '';
       position: fixed;
@@ -47,7 +46,6 @@
       pointer-events: none;
     }
 
-    /* Glow orbs */
     body::after {
       content: '';
       position: fixed;
@@ -76,7 +74,6 @@
       z-index: 1;
     }
 
-    /* Header */
     .header {
       text-align: center;
       margin-bottom: 2.5rem;
@@ -128,7 +125,6 @@
       font-weight: 400;
     }
 
-    /* Card */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -139,7 +135,6 @@
       box-shadow: 0 0 0 1px rgba(255,255,255,0.02), 0 32px 64px rgba(0,0,0,0.4);
     }
 
-    /* Top accent line */
     .card::before {
       content: '';
       position: absolute;
@@ -149,7 +144,6 @@
       border-radius: 0 0 4px 4px;
     }
 
-    /* Field groups */
     .field-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -174,10 +168,7 @@
       color: var(--muted);
     }
 
-    label span.req {
-      color: var(--accent);
-      margin-left: 2px;
-    }
+    label span.req { color: var(--accent); margin-left: 2px; }
 
     input[type="text"],
     input[type="number"],
@@ -212,7 +203,6 @@
 
     select option { background: #1a2236; }
 
-    /* Divider */
     .divider {
       height: 1px;
       background: var(--border);
@@ -234,7 +224,7 @@
       color: var(--muted);
     }
 
-    /* Drop zone */
+    /* ── DROP ZONE FIX ── */
     .drop-zone {
       border: 1.5px dashed rgba(59,130,246,0.3);
       border-radius: 14px;
@@ -244,6 +234,7 @@
       transition: all 0.25s ease;
       background: rgba(59,130,246,0.03);
       position: relative;
+      overflow: hidden; /* keeps the input clipped to the border-radius */
     }
 
     .drop-zone:hover,
@@ -252,14 +243,24 @@
       background: var(--accent-glow);
     }
 
+    /* The invisible file input covers the entire drop zone */
     .drop-zone input[type="file"] {
       position: absolute;
       inset: 0;
-      opacity: 0;
-      cursor: pointer;
       width: 100%;
       height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 10;         /* sits on top of everything inside the zone */
     }
+
+    /* All visual children must NOT intercept pointer events */
+    .drop-zone .drop-icon,
+    .drop-zone .drop-label,
+    .drop-zone .drop-sub {
+      pointer-events: none;
+    }
+    /* ────────────────── */
 
     .drop-icon {
       width: 48px;
@@ -275,7 +276,6 @@
     }
 
     .drop-zone:hover .drop-icon { transform: translateY(-3px); }
-
     .drop-icon svg { width: 22px; height: 22px; stroke: var(--accent); }
 
     .drop-label {
@@ -285,17 +285,9 @@
       margin-bottom: 0.35rem;
     }
 
-    .drop-sub {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
+    .drop-sub { font-size: 0.8rem; color: var(--muted); }
+    .drop-sub strong { color: var(--accent); font-weight: 600; }
 
-    .drop-sub strong {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    /* File preview */
     .file-preview {
       display: none;
       align-items: center;
@@ -342,7 +334,6 @@
     .file-remove:hover { color: var(--error); }
     .file-remove svg { width: 16px; height: 16px; stroke: currentColor; }
 
-    /* Submit button */
     .btn-submit {
       width: 100%;
       margin-top: 1.75rem;
@@ -379,12 +370,9 @@
     }
 
     .btn-submit:active:not(:disabled) { transform: translateY(0); }
-
     .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
     .btn-submit svg { width: 18px; height: 18px; stroke: currentColor; }
 
-    /* Spinner */
     .spinner {
       width: 18px; height: 18px;
       border: 2px solid rgba(255,255,255,0.3);
@@ -395,10 +383,9 @@
     }
 
     .btn-submit.loading .spinner { display: block; }
-    .btn-submit.loading .btn-text { display: none; }
+    .btn-submit.loading .btn-text,
     .btn-submit.loading .btn-icon { display: none; }
 
-    /* Status messages */
     .status {
       margin-top: 1.25rem;
       padding: 1rem 1.25rem;
@@ -427,7 +414,6 @@
 
     .status svg { width: 18px; height: 18px; stroke: currentColor; flex-shrink: 0; margin-top: 1px; }
 
-    /* Footer note */
     .footer-note {
       text-align: center;
       margin-top: 1.5rem;
@@ -438,7 +424,6 @@
 
     .footer-note a { color: var(--accent); text-decoration: none; }
 
-    /* Progress bar */
     .progress-wrap {
       height: 3px;
       background: var(--surface-2);
@@ -458,7 +443,6 @@
       transition: width 0.3s ease;
     }
 
-    /* Animations */
     @keyframes fadeDown {
       from { opacity: 0; transform: translateY(-16px); }
       to { opacity: 1; transform: translateY(0); }
@@ -469,16 +453,13 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.4; }
     }
 
-    /* Responsive */
     @media (max-width: 480px) {
       .card { padding: 1.75rem 1.25rem; }
       .field-group { grid-template-columns: 1fr; }
@@ -490,13 +471,12 @@
 
   <div class="wrapper">
     <div class="header">
-      <div class="brand-tag">KuddleandCo BPO · Secure Upload</div>
+      <div class="brand-tag">KuddleandCo · Secure Upload</div>
       <h1>Agent File<br/>Submission</h1>
       <p class="subtitle">Submit your documents securely. Files are stored in SharePoint.</p>
     </div>
 
     <div class="card">
-      <!-- Agent Info -->
       <div class="field-group">
         <div class="field">
           <label for="agent-name">Agent Name <span class="req">*</span></label>
@@ -525,7 +505,6 @@
 
       <div class="divider"><span>Attachment</span></div>
 
-      <!-- File Upload -->
       <label>Upload File <span class="req">*</span></label>
       <div style="margin-top: 0.5rem;">
         <div class="drop-zone" id="drop-zone">
@@ -561,12 +540,10 @@
         </div>
       </div>
 
-      <!-- Progress bar -->
       <div class="progress-wrap" id="progress-wrap">
         <div class="progress-bar" id="progress-bar"></div>
       </div>
 
-      <!-- Submit -->
       <button class="btn-submit" id="btn-submit" type="button">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/>
@@ -576,8 +553,7 @@
         <div class="spinner"></div>
       </button>
 
-      <!-- Status messages -->
-      <div class="status" id="status-success">
+      <div class="status success" id="status-success">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
           <polyline points="22 4 12 14.01 9 11.01"/>
@@ -588,7 +564,7 @@
         </div>
       </div>
 
-      <div class="status" id="status-error">
+      <div class="status error" id="status-error">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
           <line x1="12" y1="8" x2="12" y2="12"/>
@@ -603,42 +579,41 @@
 
     <div class="footer-note">
       Files are encrypted in transit and stored securely in SharePoint.<br/>
-      Issues? Contact <a href="/cdn-cgi/l/email-protection#4b223f0b332628293b2465282426"><span class="__cf_email__" data-cfemail="523b26122a3f3130223d7c313d3f">[email&#160;protected]</span></a>
+      Issues? Contact <a href="mailto:it@kuddleandco.com">it@kuddleandco.com</a>
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    // ─── CONFIG ───────────────────────────────────────────────────────────────
-    // Replace this with your actual Power Automate HTTP trigger URL
+  <script>
+    // ─── CONFIG — paste your Power Automate HTTP trigger URL here ────────────
     const POWER_AUTOMATE_URL = "https://default4a10795dedc04a878f98324334032c.e2.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9fb066536ba146d2b573fc3a49222c20/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZKdGfokiRyxHQwU0t6lFaVxOdobNd3Z2gE7dmvby2Kg";
     // ─────────────────────────────────────────────────────────────────────────
 
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const filePreview = document.getElementById('file-preview');
-    const fileName = document.getElementById('file-name');
-    const fileSize = document.getElementById('file-size');
-    const fileRemove = document.getElementById('file-remove');
-    const btnSubmit = document.getElementById('btn-submit');
+    const dropZone     = document.getElementById('drop-zone');
+    const fileInput    = document.getElementById('file-input');
+    const filePreview  = document.getElementById('file-preview');
+    const fileNameEl   = document.getElementById('file-name');
+    const fileSizeEl   = document.getElementById('file-size');
+    const fileRemove   = document.getElementById('file-remove');
+    const btnSubmit    = document.getElementById('btn-submit');
     const progressWrap = document.getElementById('progress-wrap');
-    const progressBar = document.getElementById('progress-bar');
-    const statusSuccess = document.getElementById('status-success');
-    const statusError = document.getElementById('status-error');
-    const successMsg = document.getElementById('success-msg');
-    const errorMsg = document.getElementById('error-msg');
+    const progressBar  = document.getElementById('progress-bar');
+    const statusSuccess= document.getElementById('status-success');
+    const statusError  = document.getElementById('status-error');
+    const successMsg   = document.getElementById('success-msg');
+    const errorMsg     = document.getElementById('error-msg');
 
     let selectedFile = null;
 
-    function formatBytes(bytes) {
-      if (bytes < 1024) return bytes + ' B';
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    function formatBytes(b) {
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+      return (b/1048576).toFixed(2) + ' MB';
     }
 
     function showFile(file) {
       selectedFile = file;
-      fileName.textContent = file.name;
-      fileSize.textContent = formatBytes(file.size);
+      fileNameEl.textContent = file.name;
+      fileSizeEl.textContent = formatBytes(file.size);
       filePreview.classList.add('visible');
       dropZone.style.display = 'none';
     }
@@ -656,7 +631,6 @@
 
     fileRemove.addEventListener('click', clearFile);
 
-    // Drag & drop
     dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
     dropZone.addEventListener('drop', e => {
@@ -670,12 +644,12 @@
       statusError.classList.remove('visible');
     }
 
-    async function toBase64(file) {
+    function toBase64(file) {
       return new Promise((res, rej) => {
-        const reader = new FileReader();
-        reader.onload = () => res(reader.result.split(',')[1]);
-        reader.onerror = rej;
-        reader.readAsDataURL(file);
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(file);
       });
     }
 
@@ -696,7 +670,6 @@
     btnSubmit.addEventListener('click', async () => {
       hideStatuses();
 
-      // Validate
       const name = document.getElementById('agent-name').value.trim();
       const wave = document.getElementById('agent-wave').value.trim();
       const role = document.getElementById('agent-role').value;
@@ -709,11 +682,10 @@
 
       if (selectedFile.size > 10 * 1024 * 1024) {
         statusError.classList.add('visible');
-        errorMsg.textContent = 'File exceeds the 10MB limit. Please compress or use a smaller file.';
+        errorMsg.textContent = 'File exceeds 10MB. Please use a smaller file.';
         return;
       }
 
-      // Start loading state
       btnSubmit.classList.add('loading');
       btnSubmit.disabled = true;
       progressWrap.classList.add('visible');
@@ -721,12 +693,9 @@
 
       try {
         await animateProgress(30, 300);
-
-        // Encode file to base64
         const base64File = await toBase64(selectedFile);
         await animateProgress(55, 400);
 
-        // Build payload
         const payload = {
           agentName: name,
           wave: wave,
@@ -738,7 +707,6 @@
 
         await animateProgress(70, 300);
 
-        // POST to Power Automate
         const response = await fetch(POWER_AUTOMATE_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -750,7 +718,6 @@
         if (response.ok || response.status === 202) {
           statusSuccess.classList.add('visible');
           successMsg.textContent = `${selectedFile.name} saved to SharePoint › Wave ${wave} › ${name}.`;
-          // Reset form
           document.getElementById('agent-name').value = '';
           document.getElementById('agent-wave').value = '';
           document.getElementById('agent-role').value = '';
@@ -765,4 +732,14 @@
         errorMsg.textContent = `Upload failed: ${err.message}. Contact IT if this persists.`;
         progressBar.style.width = '0%';
       } finally {
-        btnSubmit.classList.remove(
+        btnSubmit.classList.remove('loading');
+        btnSubmit.disabled = false;
+        setTimeout(() => {
+          progressWrap.classList.remove('visible');
+          progressBar.style.width = '0%';
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>
